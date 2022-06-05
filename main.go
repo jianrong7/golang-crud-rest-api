@@ -22,8 +22,11 @@ func main() {
 	// Initialize the router
 	router := mux.NewRouter().StrictSlash(true)
 
+	router.HandleFunc("/", controllers.HelloWorld).Methods("GET")
+
 	// Register Routes
 	RegisterProductRoutes(router)
+	RegisterUserRoutes(router)
 
 	router.Use(mux.CORSMethodMiddleware(router))
 
@@ -44,10 +47,15 @@ func main() {
 
 
 func RegisterProductRoutes(router *mux.Router) {
-	router.HandleFunc("/", controllers.HelloWorld).Methods("GET")
 	router.HandleFunc("/api/products", controllers.GetProducts).Methods("GET")
 	router.HandleFunc("/api/products/{id}", controllers.GetProductById).Methods("GET")
 	router.HandleFunc("/api/products", controllers.CreateProduct).Methods("POST")
 	router.HandleFunc("/api/products/{id}", controllers.UpdateProduct).Methods("PUT")
 	router.HandleFunc("/api/products/{id}", controllers.DeleteProduct).Methods("DELETE")
+}
+
+func RegisterUserRoutes(router *mux.Router) {
+	router.HandleFunc("/api/users", controllers.GetUsers).Methods("GET")
+	router.HandleFunc("/api/users", controllers.CreateUser).Methods("POST")
+	router.HandleFunc("/api/users/{id}", controllers.GetUser).Methods("GET")
 }
