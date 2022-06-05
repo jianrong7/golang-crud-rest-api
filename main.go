@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -24,10 +25,23 @@ func main() {
 	// Register Routes
 	RegisterProductRoutes(router)
 
+	router.Use(mux.CORSMethodMiddleware(router))
+
+	c := cors.New(cors.Options{
+			AllowedOrigins: []string{"http://localhost:3000"},
+			AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"},
+			AllowCredentials: true,
+			// Enable Debugging for testing, consider disabling in production
+			Debug: true,
+	})
+
+	handler := c.Handler(router)
+
 	// Start the server
-	log.Println(fmt.Sprintf("Starting Server on port %s", AppConfig.Port))
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", AppConfig.Port), router))
+	log.Printf(fmt.Sprintf("Starting Server on port %s", AppConfig.Port))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", AppConfig.Port), handler))
 }
+
 
 func RegisterProductRoutes(router *mux.Router) {
 	router.HandleFunc("/", controllers.HelloWorld).Methods("GET")
